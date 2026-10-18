@@ -16,7 +16,10 @@ endyr <- 2025
 source("rkt_func.r")
 
 # Run trends test
-output <- rkt_func(data, location, tsfreq = 8, endyr)
+outputRaw <- rkt_func(data, location, tsfreq = 8, endyr)
+
+output <- outputRaw |>
+  filter(! Station %in% c('22-01','22-16','24-07'))
 
 # Save raw trends results to excel file
 write.xlsx(output, paste0(endyr,'/PC_trends_', endyr - 9, '_', endyr, '.xlsx'))
@@ -74,10 +77,10 @@ coords <- read_excel(dataPath, guess_max = 50000) |>
 # Cleaned up trends table
 cleanTrends <- output |>
   select(Site = Station, Param, Level = lvl, Trend = final_td, Direction = final_dir,
-         Magnitude = rel_mag, p_value = pval.corr) |>
+         Magnitude = rel_mag) |>
   mutate(Direction = ifelse(Trend == 'No Trend', NA, Direction),
-         Magnitude = ifelse(Trend == 'No Trend', NA, Magnitude),
-         p_value = round(p_value,4)) |>
+         Magnitude = ifelse(Trend == 'No Trend', NA, Magnitude)
+         ) |>
   filter(Trend == 'Trend',
          Direction != 'Not',
          Param %in% c('TN', 'TP','DO%','Chl_a','E_coli','Enterococci')) |>

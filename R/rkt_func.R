@@ -79,7 +79,8 @@ rkt_func <- function(data, location, tsfreq, endyr){
       values_to='Value'
     ) |>
     group_by(station) |>
-    arrange(station,Param)
+    arrange(station,Param) |>
+    ungroup()
   
   # Make it so that each site has a surface and bottom value for each parameter.
   # If a site only has surface, duplicate the values and call them bottom. This
@@ -123,7 +124,7 @@ rkt_func <- function(data, location, tsfreq, endyr){
     filter(! (Level == 'Bottom' & Param %in% c('TN','OP','TP','TSS','Turbidity',
                                                'Chl_a','E_coli','Enterococci','Color',
                                                'NH3','NOX','TKN','TN','BOD5'))) |>
-    filter(! station %in% c('35-04','53-05')) |>
+    filter(! station %in% c('53-05')) |>
     group_by(station,Date, Level, Year,sample_period, Param) |>
     summarise(Value = median(Value, na.rm = TRUE)) |>
     ungroup()
